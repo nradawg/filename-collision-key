@@ -237,4 +237,11 @@ describe('length limits', () => {
     expect(measure('\u{1F600}', 'utf16-code-units')).toBe(2);
     expect(measure('\u{1F600}', 'utf8-bytes')).toBe(4);
   });
+
+  it('agrees with a real encoder across every byte width', () => {
+    const encoder = new TextEncoder();
+    for (const sample of ['a', 'é', '中', '\u{1F600}', `caf${E_ACUTE}`, `e${String.fromCodePoint(0x0301)}`, 'ΑΒΓ', '']) {
+      expect(measure(sample, 'utf8-bytes')).toBe(encoder.encode(sample).length);
+    }
+  });
 });

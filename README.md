@@ -122,7 +122,7 @@ Length is measured on the **stored** form, in the unit the target limits. NTFS a
 
 ```bash
 npm install
-npm test   # 96 tests: trailing strip, device names, streams, case tables, normalization, divergence
+npm test   # 97 tests: trailing strip, device names, streams, case tables, normalization, divergence
 ```
 
 ## License

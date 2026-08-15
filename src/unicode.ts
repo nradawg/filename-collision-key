@@ -298,8 +298,27 @@ export function assertNoContestedCharacters(name: string, profile: FilesystemPro
   }
 }
 
-/** Counts the name in the unit the profile actually limits. */
+/**
+ * Counts the name in the unit the profile actually limits.
+ *
+ * The UTF-8 length is computed from the code points rather than by
+ * encoding the string, because the encoder is a host global rather than a
+ * language feature and this module has no business requiring one. The
+ * arithmetic is the UTF-8 definition: one byte below U+0080, two below
+ * U+0800, three for the rest of the BMP and four above it. Counting
+ * `name.length` instead would undercount every accented Latin name by
+ * roughly its accent count and every CJK name by two thirds.
+ */
 export function measure(name: string, unit: 'utf16-code-units' | 'utf8-bytes'): number {
   if (unit === 'utf16-code-units') return name.length;
-  return new TextEncoder().encode(name).length;
+  let bytes = 0;
+  for (const character of name) {
+    const codePoint = character.codePointAt(0);
+    if (codePoint === undefined) continue;
+    if (codePoint < 0x80) bytes += 1;
+    else if (codePoint < 0x800) bytes += 2;
+    else if (codePoint < 0x10000) bytes += 3;
+    else bytes += 4;
+  }
+  return bytes;
 }
